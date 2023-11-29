@@ -11,7 +11,7 @@ String receivedData = "";  // Variable para rastrear el dato recibido
 String val; 
 int c=5;
 void setup() {
-  size(800, 400);  // tamanio de pantalla 
+  size(800, 400);  // tamañio de pantalla 
    img = loadImage("img.jpeg");  
    Alto = loadImage("alto.png");  
    myPort = new Serial(this, "COM6", 9600);  // Abre el puerto al que esta conectado arduino
@@ -52,11 +52,11 @@ void setup() {
 }
 
 void draw() {
-  background(20);  // Fija el color de fondo en blanco
-   fill(255, 0, 0);  // Color rojo
+  background(20);  // Set the background color to white
+   fill(255, 0, 0);  // Red color
    image(img, 0, 0, width/2, height);
 
-  //Dibuja un rectangulo en el lado derecho de la pantalla de otro color
+  // Draw a rectangle on the right half of the screen with another color
   fill(#C2D3ED);  // Blue color
   rect(width/2, 0, width/2, height);
   if (keyPressed) {
@@ -83,8 +83,6 @@ void draw() {
   // }
   // }
   
-  
-  
   // Dibuja la barra de carga si se está cargando
   if (isLoading) {
     fill(255);
@@ -107,14 +105,11 @@ void draw() {
     if (val != null) 
     {
    // Dibuja un cartel que dice "Alto" si se recibe un dato desde el puerto serie
-   if (int(val) <=c ) {
+      if (int(val) <=c ) {
       alto(c);
-  }
+      }
     }
-  
-}
-
-  
+  }
 }
 
  void alto(int val){
