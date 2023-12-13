@@ -9,21 +9,23 @@ boolean isLoading = false;  // Variable para rastrear el estado de carga
 int loadProgress = 0;  // Variable para rastrear el progreso de carga
 String receivedData = "";  // Variable para rastrear el dato recibido
 String val; 
-int c=5;
+
 void setup() {
-  size(800, 400);  // tamañio de pantalla 
+  size(800, 400);  // Tamaño de pantalla 
    img = loadImage("img.jpeg");  
    Alto = loadImage("alto.png");  
-   myPort = new Serial(this, "COM6", 9600);  // Abre el puerto al que esta conectado arduino
- 
-  cp5 = new ControlP5(this);  // Crea un nuevo instancia de control
+    String Puerto=Serial.list()[0];
+   myPort = new Serial(this, Puerto, 9600);  // Abre el puerto al que esta conectado arduino
+   myPort.clear();
+  myPort.bufferUntil('\n');
+  cp5 = new ControlP5(this);  // Crea una nueva instancia de control
 
   // Crea botones para up, down, left, right
   cp5.addButton("up")
    .setValue(0)
    .setPosition(150, 100)
    .setSize(50, 50)
-   .setCaptionLabel("A");
+   .setCaptionLabel("F");
 
   cp5.addButton("down")
    .setValue(0)
@@ -35,13 +37,13 @@ void setup() {
    .setValue(0)
    .setPosition(100, 150)
    .setSize(50, 50)
-   .setCaptionLabel("I");
+   .setCaptionLabel("L");
 
   cp5.addButton("right")
    .setValue(0)
    .setPosition(200, 150)
    .setSize(50, 50)
-   .setCaptionLabel("D");
+   .setCaptionLabel("R");
 
   // Crea un boton para guardar un archivo en el centro de la pantalla
   cp5.addButton("save")
@@ -52,36 +54,31 @@ void setup() {
 }
 
 void draw() {
-  background(20);  // Set the background color to white
+  background(20);  // Establece el fondo en blanco
    fill(255, 0, 0);  // Red color
    image(img, 0, 0, width/2, height);
 
-  // Draw a rectangle on the right half of the screen with another color
+  // Dibuja un rectangulo en el lado derecho de la pantalla de otro color
   fill(#C2D3ED);  // Blue color
   rect(width/2, 0, width/2, height);
   if (keyPressed) {
     if (key == CODED) {
       if (keyCode == UP) {
         cp5.getController("up").setColorBackground(color(255,0,0));
-        // myPort.write('F');
+         myPort.write('F');
       } else if (keyCode == DOWN) {
         cp5.getController("down").setColorBackground(color(255,0,0));
-        // myPort.write('B');
+         myPort.write('B');
       } else if (keyCode == LEFT) {
         cp5.getController("left").setColorBackground(color(255,0,0));
-        // myPort.write('L');
+         myPort.write('L');
       } else if (keyCode == RIGHT) {
         cp5.getController("right").setColorBackground(color(255,0,0));
-        // myPort.write('R');
+         myPort.write('R');
       }
+      myPort.clear();
     }
   }
-  // if(myPort.available()>0){
-  //  char valor= myPort.readChar();
-  //  if(valor=='u'){
-      
-  // }
-  // }
   
   // Dibuja la barra de carga si se está cargando
   if (isLoading) {
@@ -97,49 +94,66 @@ void draw() {
     if (loadProgress > 100) {
       isLoading = false;
       loadProgress = 0;
-    }
-  }
-   if ( myPort.available() > 0) 
-  { 
-    val = myPort.readStringUntil('\n');         
-    if (val != null) 
-    {
-   // Dibuja un cartel que dice "Alto" si se recibe un dato desde el puerto serie
-      if (int(val) <=c ) {
-      alto(c);
       }
     }
+    
+  // Dibuja un cartel que dice "Alto" si se recibe un dato desde el puerto serie
+   if ( myPort.available() > 0) { 
+     char a = myPort.readChar();
+    print(a);
+    val = myPort.readString();
+    print(val);
+    data.add(val);  // Almacena los datos recibidos en la lista
+    switch (a){
+     case 'u': // Calcula las coordenadas del centro de la pantalla
+      int centerX = width / 2;
+      int centerY = height / 2;
+
+      // Define el tamaño de la imagen
+      int imgWidth = 220;  // Cambia esto por el ancho que desees
+      int imgHeight = 220;  // Cambia esto por la altura que desees
+
+      // Calcula las coordenadas para centrar la imagen
+      int imgX = centerX - imgWidth / 2+200;
+      int imgY = centerY - imgHeight / 2-60;
+
+      // Dibuja la imagen
+      image(Alto, imgX, imgY, imgWidth, imgHeight);
+      delay(1);
+      break;
+      }
+    }
+   }
+
+
+void keyReleased() {
+  if (key == CODED) {
+    if (keyCode == UP) {
+      cp5.getController("up").setColorBackground(color(0,0,255));  // Cambia el color del botón a azul
+      myPort.write('S');
+    } else if (keyCode == DOWN) {
+      cp5.getController("down").setColorBackground(color(0,0,255));  // Cambia el color del botón a azul
+      myPort.write('S');
+    } else if (keyCode == LEFT) {
+      cp5.getController("left").setColorBackground(color(0,0,255));  // Cambia el color del botón a azul
+      myPort.write('S');
+    } else if (keyCode == RIGHT) {
+      cp5.getController("right").setColorBackground(color(0,0,255));  // Cambia el color del botón a azul
+       myPort.write('S');
+    }
   }
+  myPort.clear();
 }
 
- void alto(int val){
- // Calcula las coordenadas del centro de la pantalla
-   int centerX = width / 2;
-   int centerY = height / 2;
-
-   // Define el tamaño de la imagen
-   int imgWidth = 220;  // Cambia esto por el ancho que desees
-   int imgHeight = 220;  // Cambia esto por la altura que desees
-
-   // Calcula las coordenadas para centrar la imagen
-   int imgX = centerX - imgWidth / 2+200;
-   int imgY = centerY - imgHeight / 2-60;
-
-   // Dibuja la imagen
-   image(Alto, imgX, imgY, imgWidth, imgHeight);
-    delay(300);
- }
- // Función que se llama cuando se presiona el botón "Guardar"
+ 
+// Función que se llama cuando se presiona el botón "Guardar"
 void save() {
    // Inicia la carga
     isLoading = true;
-  if(myPort.available()>0){
-   String valor= myPort.readString();
-   data.add(valor);  // Almacena los datos recibidos en la lista
-  }
-  
   String[] dataArr = data.toArray(new String[data.size()]);  // Convierte la lista a un array
   saveStrings("data.txt", dataArr);  // Guarda el array en un archivo
   
   data.clear();  // Limpia la lista para el próximo guardado
 }
+
+
