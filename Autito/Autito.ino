@@ -79,17 +79,16 @@ void loop() {
   t = pulseIn(Echo, HIGH); //obtenemos el ancho del pulso
   d = t/59; //escalamos el tiempo a una distancia en cm
 
- /* if (d<10){
-    u = d;
-  }else{
-    u=0;
-  }  */          
+if (d<10){
+    Serial.println('u');
+    delay(10);
+}         
   
  // Serial.print("Distancia: ");
-  Serial.print(d);      //Enviamos serialmente el valor de la distancia
+  Serial.println(d);      //Enviamos serialmente el valor de la distancia
  // Serial.print("cm");
   Serial.println();
-  delay(100);
+  delay(10);
 
   if (Serial.available()){
     char toSend=MyCar.asignatoSend();
